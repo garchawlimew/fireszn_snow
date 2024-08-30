@@ -28,18 +28,12 @@ Ensure that you have the necessary data files:
 
 ## Usage
 
-1. **Clone the Repository:**
-
-   git clone https://github.com/yourusername/snow-on-off-analysis.git
-   cd snow-on-off-analysis
-
-
-2. **Place Data Files:**
+1. **Place Data Files:**
 
    - Place the `CWFIS_FWIWX2020s_SOG.csv` file in the project directory.
    - Place the IMS netCDF files in a directory and update the `path_data` variable in the script accordingly.
 
-3. **Run the Script:**
+2. **Run the Script:**
 
    Execute the script in your Python environment:
 
