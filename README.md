@@ -38,7 +38,7 @@ Ensure that you have the necessary data files:
    Execute the script in your Python environment:
 
  
-   python snow_on_off_analysis.py
+   fireszn_startend.py
 
 
    The script processes the data, performs the analysis, and generates visualizations.
