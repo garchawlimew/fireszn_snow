@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 
-#Finds first index of either 3 days snow off run (default) or 7 days snow on run
+#Finds first index of either 3 days snow off run (default) 
 def index_start_truerun(series, min_length=3):
     start = 0
     runs = []
@@ -43,10 +43,12 @@ dtype_dict = {'aes': str, 'wmo': str, 'id': str, 'prov': str, 'rep_date': str, '
 df_csv = pd.read_csv('CWFIS_FWIWX2020s_SOG.csv', dtype=dtype_dict)
 df_csv['rep_date'] = pd.to_datetime(df_csv['rep_date'])
 df_csv = df_csv[df_csv['rep_date'].dt.year.isin([2020, 2021, 2022, 2023])]
+
+# Create new rows for x and y coordinates
 df_csv['X'] = np.nan
 df_csv['Y'] = np.nan
 
-#cut off all stations north of 70 deg N
+# cut off all stations north of 70 deg N
 df_csv = df_csv[df_csv['lat'] <= 70]
 
 #setting up a dictionary of each time zone correction
@@ -60,7 +62,7 @@ y_list = []
 # Define the polar stereographic projection (straight from the IMS file)
 proj = Proj('+proj=stere +lat_0=90 +lat_ts=70 +lon_0=-45 +k=1 +x_0=0 +y_0=0 +a=6378273 +b=6356889.449 +units=m +no_defs')
 
-
+# Use proj to convert lat and lon to x and y, units of 1e6 metres
 for station_id in unique_stations:
     station_data = df_csv[df_csv['wmo-2'] == station_id].copy()
     lon = station_data['lon'].iloc[0]
@@ -94,7 +96,7 @@ IMS_crop = IMS.rio.clip_box(xmin, ymin, xmax, ymax)
 IMS_timeseries = IMS_crop.sel(time=IMS_crop.time.dt.year.isin([2020, 2021, 2022, 2023]))
 
 
-### Load up until here -------------------------------------------------------------------------------
+### Initially load up until here -------------------------------------------------------------------------------
 
 ######################################################################################################
 # Returns the station IDs of stations which have more than 100 null values in their whole timeseries
@@ -131,7 +133,6 @@ for station_id, x, y in zip(unique_stations, x_list, y_list):
     #Counts number of snow off days at each gridcell
     snow_off_count = (~ims_df['IMS_Surface_Values']).sum()
     
-
 
     if (snow_off_count == 1461) or (station_nulls>100):
         table_df = pd.DataFrame({'station_id':station_id,'snow_off_count': snow_off_count,'station_nulls': station_nulls}, index=[0]) 
@@ -197,8 +198,7 @@ plt.close(fig)
 
 
 ########################################################################################
-# from this point on load this code in order to 
-# omit all stations included in the null_count list
+# from this point on load this code in order to omit all stations included in the null_count list
 
 # Update unique_stations to include only good stations
 unique_stations = good_stations['wmo-2'].unique()
@@ -280,6 +280,8 @@ plt.show(block=False)
 
 ##############################
 # Merged snow on/off for loop
+# returns csv with snow on off
+# boolean values for each stn
 ##############################
 
 # Initialize an empty list to collect data for all stations
@@ -405,6 +407,8 @@ print("Data has been successfully merged and saved to 'doy_data.csv'.")
 
 ######################
 # Statistical Box Plot
+# for snow on/off doy
+# values and abs error
 ######################
 
 # Load the data
@@ -468,7 +472,7 @@ good_stations['rep_date'] = good_stations['rep_date'].dt.floor('D')
 # Define the dates you want to filter by
 dates_to_filter = pd.to_datetime(['2020-03-31', '2020-04-30', '2020-09-30', '2020-11-30'])
 
-# Define a function to plot the data on a map for a given date
+# Define a function to plot the data on a map for a given date using ECCC station data
 def plot_map_for_date(date, df):
     # Filter the DataFrame for the specific date
     df_date = df[df['rep_date'] == date]
